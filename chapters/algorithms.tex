@@ -183,6 +183,94 @@ In particular, Canny edge operator consists of following steps\cite{canny-edge}:
 \end{enumerate}
 
 \subsection{Hough Lines Detection}
+\paragraph{Voting}
+is a general technique where we let all the features vote for all models that are compatible with it.
+\begin{enumerate}
+	\item Cycle through features, each casting votes for model parameters.
+	\item Look for model parameters that receive a lot of votes.
+\end{enumerate}
+
+\paragraph{Hough Line Transform}
+is a voting technique that can be used to answer all of the following questions:
+\begin{itemize}
+	\item Given points that belong to a line, what is the line?
+	\item How many lines are there?
+	\item Which points belong to which lines?
+\end{itemize}\cite{introduction-to-computer-vision}
+In order to use Hough Line Transform, the image should be binary. The most common approach is to convert color image to grayscale, then apply edge detection to obtain the edge pixels. This binary image is then undergoes Hough transformation that outputs a set of lines that were found. The main idea of this algorithm is as follows:
+\begin{enumerate}
+	\item Each edge pixel votes for compatible lines
+	\item Look for lines that got many votes
+\end{enumerate}
+
+\paragraph{Line representations}
+Let us now look at the possible representations of a line. The simplest and most widely used one is using Cartesian coordinates (see Figure \ref{fig:line_cartesian}):
+\begin{equation}
+	y = m x + b
+\end{equation}
+where $m$ represents the slope and $b$ the intercept with Y-axis.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.3\textwidth]{images/hough_cartesian_equation}
+	\caption{Line represented in Cartesian coordinates}
+	\label{fig:line_cartesian}
+\end{figure}
+Other possible representation of a line is in polar coordinates (see Figure \ref{fig:line_polar}):
+\begin{equation}
+	\rho = x \cos\theta + y \sin\theta
+\end{equation}
+where $\rho$ represents the perpendicular distance from origin to the line and $\theta$ the angle the perpendicular makes with with the X-axis.
+\begin{note}
+	The OpenCV implementation of the Hough Lines algorithm returns the $\theta$ with values from range $[0, \pi]$ and allows negative $\rho$.
+\end{note}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.3\textwidth]{images/hough_polar}
+	\caption{Line represented in polar coordinates}
+	\label{fig:line_polar}
+\end{figure}
+
+\paragraph{Hough space}
+Let us now consider Image Space to be represented in polar coordinates. A line is then represented by some $\rho$ and $\theta$. We can draw such a point in $(\rho, \theta)$ coordinates that will be called \textbf{Hough space}.\cite{hough-lines}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/line_to_hough_space}
+	\caption{Line represented in Hough space}
+	\label{fig:line_hough_space}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/lines_to_hough_space}
+	\caption{Bunch of lines with common point represented in Hough space}
+	\label{fig:bunch_of_lines_hough_space}
+\end{figure}
+It turns out that a point in image space results in a sinusoid in Hough space.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/point_to_sinusoid}
+	\caption{Point in image space represented as sinusoid in Hough space}
+	\label{fig:point_to_sinusoid}
+\end{figure}
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		\textbf{Image space} & \textbf{Hough space} \\ [0.5ex]
+		\hline
+		Straight line & Point \\ [0.5ex]
+		\hline
+		Point & Sinusoid \\ [0.5ex]
+		\hline
+	\end{tabular}
+	\caption{Duality between image space and Hough space}
+\end{table}
+Finally, take a look at points that are forming a line in image space and their corresponding sinusoids in Hough space (Figure \ref{fig:line_detection_in_hough_space}). We can see, that all of the sinusoids intersect at exactly one point that represents the $(\rho, \theta)$ parameters of our line in image space.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/points_to_sinusoids}
+	\caption{Detecting a line in Hough space}
+	\label{fig:line_detection_in_hough_space}
+\end{figure}
 
 \section{Finding the Projection}
 
