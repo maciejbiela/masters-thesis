@@ -8,21 +8,30 @@ In order to obtain a photo of the splint a camera is used, then that image is be
 
 \section{Image Acquisition}
 \paragraph{}
-Images used while developing the program were shot on a regular iPhone. Also the light conditions were far from ideal. Plenty of images contain either light reflexes or extensive shades. Moreover, image background and surroundings differ which makes the processing more error prone.
+Images used while developing the program were shot on a regular iPhone. Also the light conditions were far from ideal. Plenty of images contain either light reflexes or extensive shades. Moreover, image background and surroundings differ which makes the processing more error prone (see figure \ref{fig:different_lightning_conditions}).
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{images/example_splint}
-	\caption{Example image of a splint}
+\begin{figure}[H]
+     \centering
+     \subfloat[]{\includegraphics[width=0.45\textwidth]{images/example_splint}}
+     \qquad
+     \subfloat[]{\includegraphics[width=0.45\textwidth]{images/example_splint_2}}
+     \qquad
+     \vfill
+     \subfloat[]{\includegraphics[width=0.45\textwidth]{images/example_splint_3}}
+     \qquad
+     \subfloat[]{\includegraphics[width=0.45\textwidth]{images/example_splint_4}}
+     \caption{Sample images of splints}
+     \label{fig:different_lightning_conditions}
 \end{figure}
-
-% Write about first attempts to tackle it with artificially prepared images
  
 \paragraph{}
 However, provided the system will be implemented in production use, professional equipment will be installed (for example high quality camera) and maximal effort will be undertaken to ensure similar light conditions and background (ideally striking, monochromatic colour)
 
 \section{Image Preprocessing}
-\paragraph{}
+\paragraph{Note}
+The preprocessing of the image in our case means extracting from the input image just the parts that we are interested in and dropping the rest. Specifically, the only part of the splint that is of interest to us is the surface. So the desired output of this phase is an image containing only the surface of the splint with everything else as mono-coloured background (for example white). This is not the main focus of this thesis, so only a simplified, although giving very promising results, approach will be shown. It is likely that fine-tuning this algorithm would lead to having a fully working preprocessing stage.
+
+\paragraph{Initial algorithm}
 Before computing the "barcode" representation of the splint there is a couple of steps required to enable processing. The primary goal is to extract the shape of the split from the image, effectively ignoring everything else. Let us now look at the first attempt to approach this task using following techniques:
 
 \begin{enumerate}
@@ -55,8 +64,8 @@ The pseudocode presented above greatly simplifies the usage of OpenCV library. I
 	\item \textbf{cropImage()} - to a given image applies a given mask, effectively cutting out just those pixels specified by the mask 
 \end{enumerate}
 
-\paragraph{}
-Further development of the preprocessing algorithm led to a little bit more complex series of steps. Instead of converting whole RGB image to grayscale, the multi-channel array is split into separate single-channel arrays. Empirical experiments showed that for the given set of input images best results can be obtained when using just the red color channel. The thresholding phase is now executed with threshold value computed from the histogram (first, peak value that corresponds to the splint is found and then after performing simple algebraic operations is used to obtain the value). The thresholding process returns a binary image where white color denotes area that is most likely a part of the splint and a black color otherwise. Such a binary image then undergoes a series of corresponding image blurring (using median blur filter) and morphological opening (which is a series of erosions followed by dilations). To complete the process and fill some gaps that may have appeared in some of the previous phases, a fill holes procedure is applied.
+\paragraph{Improved algorithm}
+Further development of the preprocessing algorithm led to a little bit more complex series of steps. Instead of converting whole RGB image to grayscale, the multi-channel array is split into separate single-channel arrays. Empirical experiments showed that for the given set of input images best results can be obtained when using just the red colour channel. The thresholding phase is now executed with threshold value computed from the histogram (first, peak value that corresponds to the splint is found and then after performing simple algebraic operations is used to obtain the value). The thresholding process returns a binary image where white colour denotes area that is most likely a part of the splint and a black colour otherwise. Such a binary image then undergoes a series of corresponding image blurring (using median blur filter) and morphological opening (which is a series of erosions followed by dilations). To complete the process and fill some gaps that may have appeared in some of the previous phases, a fill holes procedure is applied.
 
 \begin{algorithm}{\textbf{Extracting the shape of the split - improved approach}}
 	\begin{algorithmic}[1]
@@ -91,19 +100,120 @@ Further development of the preprocessing algorithm led to a little bit more comp
      \caption{Stages of preprocessing - successful}
 \end{figure}
 
-\begin{figure}[H]
-     \centering
-     \subfloat[Before]{\includegraphics[width=0.45\textwidth]{images/medium_before_preprocessing}}
-     \qquad
-     \subfloat[After thresholding]{\includegraphics[width=0.45\textwidth]{images/medium_after_thresholding}}
-     \qquad
-     \vfill
-     \subfloat[After opening and blurring]{\includegraphics[width=0.45\textwidth]{images/medium_after_opening_and_blurring}}
-     \qquad
-     \subfloat[Shape detected]{\includegraphics[width=0.45\textwidth]{images/medium_after_preprocessing}}
-     \caption{Stages of preprocessing - still good}
-\end{figure}
-
 \section{Image Processing}
 \paragraph{}
-Finally, at the stage of image processing, the input in an image containing only (hopefully) the shape of the splint. 
+Assuming a successful preprocessing phase, in the actual computing phase the input images contain only the surfaces of the splints (see figure \ref{fig:preprocessing_outputs}).
+
+\begin{figure}[H]
+     \centering
+     \subfloat[]{\fbox{\includegraphics[width=0.45\textwidth]{images/preprocessed_1}}}
+     \qquad
+     \subfloat[]{\fbox{\includegraphics[width=0.45\textwidth]{images/preprocessed_2}}}
+     \qquad
+     \vfill
+     \subfloat[]{\fbox{\includegraphics[width=0.45\textwidth]{images/preprocessed_3}}}
+     \qquad
+     \subfloat[]{\fbox{\includegraphics[width=0.45\textwidth]{images/preprocessed_4}}}
+     \caption{Preprocessing outputs}
+     \label{fig:preprocessing_outputs}
+\end{figure}
+
+Let us now look at the algorithm for comparing two images. 
+
+\begin{algorithm}{\textbf{Comparing two preprocessed splint images}}
+	\begin{algorithmic}[1]
+		\Function{compare}{$image1, image2$}
+			\State $image1\_up \gets$ upper half from the $image1$
+			\State $image2\_up \gets$ upper half from the $image2$
+			
+			\State $angle1 \gets \textbf{dominantAngle}(image1)$
+			\State $angle2 \gets \textbf{dominantAngle}(image2)$
+			
+			\If{$\textbf{abs}(angle1 - angle2) > \textbf{THRESHOLD\_ANGLE}$}
+				\State \textbf{return} FALSE
+			\EndIf
+			
+			\State $rotated1 \gets \textbf{rotate}(image1\_up, angle1)$
+			\State $rotated2 \gets \textbf{rotate}(image2\_up, angle2)$
+			
+			\State $result \gets \textbf{findMaxComparisonResult}(rotated1, rotated2)$
+			\State \textbf{return} $result > \textbf{THRESHOLD\_COMPARISON}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+Explanation
+\begin{itemize}
+	\item \textbf{dominantAngle(image)} - this function finds the most frequent angle amongst the lines that create the pattern. The image first undergoes Canny Edge detection, so line detection algorithm can later be used. It does so by utilising OpenCV's \textbf{HoughLinesP} function from which those angles can be computed, rounded and the dominant one is selected.
+	\item \textbf{rotate(image, angle)} - this function simply rotates the image by a given angle. It is used to point the lines that form the patter perpendicular to X-axis.
+	\item \textbf{findMaxComparisonResult(image1, image2)} - this function is returning the final comparison result. In order to alleviate some differences in the dominant angle resulting in slightly different rotations, this function itself also does some minor rotations for first of the images and each such rotation is being compared with the second image. Maximum value of those comparisons is then returned as the final value.
+\end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \subfloat[Original input]{\includegraphics[width=0.75\textwidth]{images/up}}
+     \vfill
+     \subfloat[Rotated]{\includegraphics[width=0.75\textwidth]{images/rotated_up}}
+     \caption{Rotation perpendicular to X-axis}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
+     \subfloat[Pattern code]{\includegraphics[width=0.75\textwidth]{images/rotated_up_code}}
+     \vfill
+     \subfloat[Corresponding histogram]{\includegraphics[width=0.75\textwidth]{images/rotated_up_hist}}
+     \caption{Code and its' histogram}
+\end{figure}
+
+To actually compare two histograms $H_1$ and $H_2$ a metric $d(H_1, H_2)$ is to be chosen. The algorithm uses \textbf{correlation} (which is selected by using \textbf{CV\_HISTCMP\_CORREL} flag for OpenCV's \textit{compareHist} function). The metric is then defined as:
+\begin{equation}
+	d(H_1, H_2) = \frac{\sum_I(H_1(I) - \bar{H_1})(H_2(I) - \bar{H_2})}{\sqrt{\sum_I(H_1(I) - \bar{H_1})^2 \sum_I(H_2(I) - \bar{H_2})^2}}
+\end{equation}
+where:
+\begin{equation}
+	\bar{H_k} = \frac{1}{N} \sum_J H_k(J)
+\end{equation}
+and $N$ is the total number of bins in histogram.
+
+\paragraph{}
+The histograms that are obtained for two splint images may actually differ in sizes and for the aforementioned comparison method they need to be same-sized. That is why we take the shorter histogram and slide it over the longer one, do the comparison one offset at a time and take the highest from the output values.
+
+\begin{algorithm}{\textbf{Histogram comparison}}
+	\begin{algorithmic}[1]
+		\Function{compareHist}{$h1, h2$}	
+			\If{$\textbf{length}(h1) == \textbf{length}(h2)$}
+				\State \textbf{return} $cv2.compareHist(h1, h2, cv2.HISTCMP\_CORREL)$
+			\ElsIf{$\textbf{length}(h1) > \textbf{length}(h2)$}
+				\State \textbf{return} $\textbf{maxHistComparison}(h1, h2)$
+			\Else
+				\State \textbf{return} $\textbf{maxHistComparison}(h2, h1)$
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}{\textbf{Histogram comparison - helper function}}
+	\begin{algorithmic}[1]
+		\Function{maxHistComparison}{$longer, shorter$}	
+			\State $\text{len\_shorter} \gets \textbf{length}(shorter)$
+			\State $\text{diff} \gets \textbf{length}(longer) - \textbf{length}(shorter)$
+			\State $\text{max\_result} \gets -1$
+			\For{$\text{offset} \gets 0\ \textbf{to}\ \text{diff}$}
+				\State $\text{result} \gets \textbf{compareHist}(longer[\text{offset : offset + len\_shorter}], shorter)$
+				\State $\text{max\_result} \gets \textbf{max}(\text{max\_result, result})$
+			\EndFor
+			\State \textbf{return} $\text{max\_result}$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+

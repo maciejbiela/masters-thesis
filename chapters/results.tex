@@ -1,15 +1,156 @@
 \paragraph{}
-Here I'll present the actual outcomes, with statistical tests regarding our hypotheses
+Let us now look at the outcomes. Inputs have been grouped into buckets depending of the angle of the split in the image by a step of 45$^{\circ}$.
 
 \begin{table}[H]
-	\begin{tabular}{|l|l|l|}
-		\hline
-		\cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
-		\hline\hline
-		\textbf{Actual: Same} & x & y \\ [0.5ex]
-		\hline
-		\textbf{Actual: Different} & z & w \\ [0.5ex]
-		\hline
-	\end{tabular}
-	\caption{Test Table}
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 12 & 2 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 8 & 188 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 0$^{\circ}$}
 \end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 6 & 0 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 130 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 45$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 6 & 3 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 162 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 90$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 8 & 1 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 181 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 135$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 10 & 2 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 3 & 261 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 180$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 6 & 1 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 164 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 225$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 6 & 0 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 130 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 270$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 13 & 0 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 0 & 218 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Results for angle 315$^{\circ}$}
+\end{table}
+            
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
+        \hline\hline
+        \textbf{Actual: Same} & 67 & 9 \\ [0.5ex]
+        \hline
+        \textbf{Actual: Different} & 11 & 1434 \\ [0.5ex]
+        \hline
+    \end{tabular}
+    \caption{Aggregated results}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        Sensitivity                 & 0.881578947368421 \\
+        \hline
+        Specificity                 & 0.9923875432525952 \\
+        \hline
+        Positive predictive value   & 0.8589743589743589 \\
+        \hline
+        Negative predictive value   & 0.9937629937629938 \\
+        \hline
+        False positive rate         & 0.00761245674740485 \\
+        \hline
+        False negative rate         & 0.11842105263157898 \\
+        \hline
+        False discovery rate        & 0.14102564102564108 \\
+        \hline
+        Accuracy                    & 0.9868507560815253 \\
+        \hline
+        F1 score                    & 0.8701298701298701 \\
+        \hline
+    \end{tabular}
+    \caption{Statistical measures of the algorithm}
+\end{table}
+
