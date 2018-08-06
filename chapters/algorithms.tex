@@ -1,5 +1,4 @@
 \paragraph{}
-Here I will describe in details what each algorithm does
 
 \section{OpenCV}
 \subsection{Image Thresholding}
@@ -61,7 +60,9 @@ To achieve smoothing effect, the image is convolved with a LPF kernel. This part
 \todo{Showcase different filters}
 
 \subsection{Morphological Transformations}
+\todo{Do not forget about this section}
 \subsection{Finding Contours}
+\todo{Do not forget about this section}
 
 \subsection{Edge Detection}
 \subsubsection{Derivatives and edges}
@@ -120,18 +121,24 @@ In order to obtain an operator (a kernel) that implements the definition of the 
 \end{bmatrix}
 \]
 
+\todo{Try to format more nicely}
 {\renewcommand{\arraystretch}{2}
 \begin{table}[H]
 	\centering
-	\begin{tabular}{|c|c|c|}
+	\begin{tabular}{ccc}
+		 & \textbf{X} & \textbf{Y} \\
 		\hline
-		\cellcolor{gray} & \textbf{X} & \textbf{Y} \\
-		\hline
+		\\
 		\textbf{Sobel} & $\begin{bmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \end{bmatrix}$ & $\begin{bmatrix} 1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1\end{bmatrix}$ \\
+		\\
 		\hline
+		\\
 		\textbf{Prewitt} & $\begin{bmatrix} -1 & 0 & 1 \\ -1 & 0 & 1 \\ -1 & 0 & 1 \end{bmatrix}$ & $\begin{bmatrix} 1 & 1 & 1 \\ 0 & 0 & 0 \\ -1 & -1 & -1 \end{bmatrix}$ \\
+		\\
 		\hline
+		\\
 		\textbf{Roberts} & $\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$ & $\begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$ \\
+		\\
 		\hline
 	\end{tabular}
 	\caption{Some of the well-known gradient kernels}
@@ -253,6 +260,7 @@ It turns out that a point in image space results in a sinusoid in Hough space.
 \end{figure}
 \begin{table}[H]
 	\centering
+	\begin{spacing}{1.5}
 	\begin{tabular}{|l|l|}
 		\hline
 		\textbf{Image space} & \textbf{Hough space} \\ [0.5ex]
@@ -262,6 +270,7 @@ It turns out that a point in image space results in a sinusoid in Hough space.
 		Point & Sinusoid \\ [0.5ex]
 		\hline
 	\end{tabular}
+	\end{spacing}
 	\caption{Duality between image space and Hough space}
 \end{table}
 Finally, take a look at points that are forming a line in image space and their corresponding sinusoids in Hough space (Figure \ref{fig:line_detection_in_hough_space}). We can see, that all of the sinusoids intersect at exactly one point that represents the $(\rho, \theta)$ parameters of our line in image space.
@@ -276,6 +285,7 @@ Finally, take a look at points that are forming a line in image space and their 
 Let us now look how it all works for actually finding the lines. As mentioned earlier, the algorithm uses a voting technique, so we let each edge pixel to cast its votes. An accumulator (a matrix) is created to hold those votes. Looping over the edge pixels, we generate sinusoidal curves that correspond to this point in Hough space for each $\theta$ in range $[0, \pi]$ given some step ($\delta$). For that value of $\theta$ the corresponding $\rho$ is computed (from the line equation: $\rho = x\cos\theta + y\sin\theta$). Such a $(\theta, \rho)$ pair increments corresponding count of votes in the accumulator matrix. Then next value of $\theta$ is taken and the procedure repeats. This continues up until $\theta$ is equal to $\pi$  and for each of those values votes are "casted". Then next edge pixel is taken and is voting. The procedure ends when no edge pixel is left to vote. Cells from the accumulator matrix that have a lot of votes correspond to lines in image space.
 
 \begin{algorithm}
+	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{hough\_line\_transform}{$edge\_image$}
 			\State Initialize $H[\rho, \theta] = 0$
@@ -288,6 +298,7 @@ Let us now look how it all works for actually finding the lines. As mentioned ea
 			\State Find value(s) of $(\rho, \theta)$ where $H[\rho, \theta]$ is a local maximum
 		\EndFunction
 	\end{algorithmic}
+	\end{spacing}
 	\caption{Hough Line Transform}
 \end{algorithm}
 
@@ -307,10 +318,3 @@ Figure \ref{fig:hough-line-transform} shows an edge image that contains two visi
      \caption{Example of applying Hough Line Transform}
      \label{fig:hough-line-transform}
 \end{figure}
-
-
-\section{Finding the Projection}
-
-\section{Reading the Code}
-
-\section{Comparing Two Codes}
