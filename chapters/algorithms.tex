@@ -15,12 +15,21 @@ Thresholding is a process of creating binary image from a grayscale one.\cite{di
 \paragraph{Problems with thresholding}
 The most significant issue with thresholding is the fact that only the intensity is considered and no relationship between pixels is. This can lead to the inclusion of external pixels that are not part of the original region. Similarly, isolated pixels can be lost from a region. The presence of noise in the image can easily worsen the outcome, because pixels intensity may not represent the normal intensity in the region. The usage of thresholding is often based on experimentation and small adjustments. Still, a large portion of a region may be lost or the area may be extended with extraneous background pixels (especially when shadows of objects are presents - which causes them to be included as part of dark object on a light background). One of the flaws of global image thresholding is also the fact that it is not particularly effective when changes in illumination occur in the image. This drawback can partially be mitigated by determining thresholds locally, so instead of a single global threshold value, the threshold itself can actually vary across different parts of the image.
 
-\todo{Add images that showcase different thresholding}
+\paragraph{}
+Figures \ref{fig:threshold_variants} and \ref{fig:threshold_examples} present the various threshold variants available in OpenCV.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{images/thresholds}
-	\caption{Thresholding variants in OpenCV}
+	\caption{Threshold variants in OpenCV}
+	\label{fig:threshold_variants}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{images/thresholds_example}
+	\caption{Example usage of thresholds in OpenCV}
+	\label{fig:threshold_examples}
 \end{figure}
 
 \subsection{Image Filtering}
@@ -37,11 +46,94 @@ Let us now look at correlation in 2D. Given a square filter with odd number of e
 \begin{equation}
 	(F \otimes I)(x, y) = \sum_{i = -N}^{N}\sum_{j = -N}^{N}F(i, j)I(x + i, y + j)
 \end{equation}
-\todo{Insert example here showing matrices and the operations being applied}
 Convolution is very similar to correlation, but the filter is flipped both horizontally and vertically beforehand. 
 \begin{equation}
 	(F \star I)(x, y) = \sum_{i = -N}^{N}\sum_{j = -N}^{N}F(i, j)I(x - i, y - j)
 \end{equation}
+
+\paragraph{}
+Let us now see a simple example presenting difference between correlation and convolution. Equation \ref{eq:correlation} shows a very basic example of correlation.
+\begin{equation}
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\            
+\end{bmatrix}
+\otimes
+\begin{bmatrix}
+    a & b & c \\
+    d & e & f \\
+    g & h & i
+\end{bmatrix}
+=
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & i & h & g & 0 & 0 \\
+    0 & 0 & f & e & d & 0 & 0 \\
+    0 & 0 & c & b & a & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\            
+\end{bmatrix}
+\label{eq:correlation}
+\end{equation}
+
+\paragraph{}
+Equation \ref{eq:convolution}, on the other hand, presents a convolution. We can see that it is indeed equivalent to a correlation with a flipped filter.
+
+\begin{equation}
+\begin{array}{l}
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\            
+\end{bmatrix}
+\star
+\begin{bmatrix}
+    a & b & c \\
+    d & e & f \\
+    g & h & i
+\end{bmatrix}
+= \\ \\
+=
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\            
+\end{bmatrix}
+\otimes
+\begin{bmatrix}
+    i & h & g \\
+    f & e & d \\
+    c & b & a
+\end{bmatrix}
+=
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & a & b & c & 0 & 0 \\
+    0 & 0 & d & e & f & 0 & 0 \\
+    0 & 0 & g & h & i & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 0 \\            
+\end{bmatrix}
+\end{array}
+\label{eq:convolution}
+\end{equation}
+
+\paragraph{}
 The key distinction before the two operations is the associative property of convolution:
 \begin{equation}
 	\forall F, G - filters \quad \forall I - image: F \star (G \star I) = (F \star G) \star I
@@ -60,9 +152,47 @@ To achieve smoothing effect, the image is convolved with a LPF kernel. This part
 \todo{Showcase different filters}
 
 \subsection{Morphological Transformations}
-\todo{Do not forget about this section}
+\paragraph{}
+Morphological transformations are operations based on the image shape. Two inputs are needed to perform such a transformation, one being the original image whereas the other, called kernel, decides the nature of operation. It is performed on binary images, with black background (having value 0) and white foreground (having value 1). Two most basic ones are erosion and dilation which will now be presented.
+
+\paragraph{}
+\textbf{Erosion} - erodes away the boundaries of the foreground object. It is performed by sliding the kernel over the image. For each pixel the following equation is applied.
+
+\begin{equation}
+	Erosion(pixel, kernel) = \begin{cases}
+		1 & \text{if all the pixels under $kernel$ are 1}\\
+		0 & \text{otherwise}
+	\end{cases}
+\end{equation}
+
+When the output of erosion is 0, the pixel is said to be eroded.
+
+\paragraph{}
+\textbf{Dilation} - on the other hand, it is the opposite of erosion. 
+
+\begin{equation}
+	Erosion(pixel, kernel) = \begin{cases}
+		1 & \text{if at least one pixel under $kernel$ is 1}\\
+		0 & \text{otherwise}
+	\end{cases}
+\end{equation}
+
+\paragraph{}
+Figure \ref{fig:morphological_examples} shows both erosion and dilation applied to some simple image. It also presents one more morphological transformation, which is just a combination of both of them, \textbf{gradient} - a difference between dilation and erosion of an image.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/morphological}
+	\caption{Example of morphological transformations}
+	\label{fig:morphological_examples}
+\end{figure}
+
 \subsection{Finding Contours}
-\todo{Do not forget about this section}
+\paragraph{}
+A contour is a list of points that represent, in one way or another, a curve in an image.\cite{learning-opencv-3} They come in handy for analysing the shape of an object, for its detection and for recognition. For better results it is good to use binary images, so the process of contours finding should be applied after thresholding or edge detecting.
+
+\paragraph{}
+Figure \ref{fig:preprocessing} shows what the process of finding contours can lead to - detecting the shape of an object.
 
 \subsection{Edge Detection}
 \subsubsection{Derivatives and edges}
@@ -121,7 +251,6 @@ In order to obtain an operator (a kernel) that implements the definition of the 
 \end{bmatrix}
 \]
 
-\todo{Try to format more nicely}
 {\renewcommand{\arraystretch}{2}
 \begin{table}[H]
 	\centering
