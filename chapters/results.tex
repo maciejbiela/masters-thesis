@@ -1,5 +1,7 @@
+\section{Outcomes}
+\subsection{Bucketized}
 \paragraph{}
-Let us now look at the outcomes. Inputs have been grouped into buckets depending of the angle of the split in the image by a step of 45$^{\circ}$. Dropping single image of a blurred splint (8/11) from the input set resulted in very satisfying results as presented in the tables below - both for individual angles .
+Let us now look at the outcomes. Inputs have been grouped into buckets depending of the angle of the split in the image by a step of 45$^{\circ}$. It resulted in very satisfying results as presented in the tables below - both for individual angles (tables \ref{tab:results_angle_0} through \ref{tab:results_angle_315}) and also in total (aggregated data from all buckets) - table \ref{tab:bucketized_results}.
 
 \begin{table}[H]
     \centering
@@ -15,6 +17,7 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \end{tabular}
     \end{spacing}
     \caption{Results for angle 0$^{\circ}$}
+    \label{tab:results_angle_0}
 \end{table}
             
 \begin{table}[H]
@@ -127,6 +130,7 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \end{tabular}
     \end{spacing}
     \caption{Results for angle 315$^{\circ}$}
+    \label{tab:results_angle_315}
 \end{table}
             
 \begin{table}[H]
@@ -143,6 +147,7 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \end{tabular}
     \end{spacing}
     \caption{Aggregated results}
+    \label{tab:bucketized_results}
 \end{table}
         
 \begin{table}[H]
@@ -173,7 +178,9 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \caption{Statistical measures of the algorithm - bucketized}
 \end{table}
 
-\todo{Describe situation for all of the inputs}
+\subsection{Overall}
+\paragraph{}
+Table \ref{tab:overall_results} presents the result of applying the comparison algorithm across the whole set of input images.
 
 \begin{table}[H]
     \centering
@@ -189,6 +196,7 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \end{tabular}
     \end{spacing}
     \caption{Overall results}
+    \label{tab:overall_results}
 \end{table}
         
 \begin{table}[H]
@@ -219,4 +227,111 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
     \caption{Statistical measures of the algorithm - all data}
 \end{table}
 
-\todo{Add statistical tests verifyin the hypothesis that angle is important}
+\section{Hypothesis verification}
+\paragraph{}
+In subsection \ref{subsect:angle_importance} it was mentioned that the angle under which the photo was taken plays significant role. Hence, it is our hypothesis. To confirm that we can compare sensitivities and specificities of both tests: bucketized and for all inputs. Two-sample tests for binomial proportions are appropriate for this setting ($\chi^2$ test and Fisher's exact test)\cite{diagnostic-testing}. The following code listing \ref{lst:comparison} presents a SAS program that will help us confirming this hypothesis.
+
+\begin{lstlisting}[language=SAS, caption=SAS program for comparison of tests, label={lst:comparison}, basicstyle={\small, \ttfamily}]
+proc format;
+value yesnofmt 1='yes' 2='no';
+run;
+
+data sensitivity_diag1;
+input same count;
+format same yesnofmt.;
+cards;
+1 64
+2 11
+;
+run;
+
+proc freq data=sensitivity_diag1;
+tables same/binomial alpha=0.05;
+weight count;
+title "Exact and Asymptotic 95% Confidence Intervals for Sensitivity - bucketized results";
+run;
+
+data sensitivity_diag2;
+input same count;
+format same yesnofmt.;
+cards;
+1 300
+2 572
+;
+run;
+
+proc freq data=sensitivity_diag2;
+tables same/binomial alpha=0.05;
+weight count;
+title "Exact and Asymptotic 95% Confidence Intervals for Sensitivity - all results";
+run;
+
+data comparison_sensitivity;
+input test same count;
+format same yesnofmt.;
+cards;
+1 1 64 
+1 2 11 
+2 1 300
+2 2 572 
+;
+run;
+
+proc freq data=comparison_sensitivity;
+tables same*test/chisq;
+exact chisq;
+weight count;
+title "Exact and Asymptotic Tests for Comparing Sensitivities";
+run;
+
+data specificity_diag1;
+input different count;
+format different yesnofmt.;
+cards;
+1 1426
+2 0
+;
+run;
+
+proc freq data=specificity_diag1;
+tables different/binomial alpha=0.05;
+weight count;
+title "Exact and Asymptotic 95% Confidence Intervals for Specificity - bucketized results";
+run;
+
+data specificity_diag2;
+input different count;
+format different yesnofmt.;
+cards;
+1 11684
+2 5
+;
+run;
+
+proc freq data=specificity_diag2;
+tables different/binomial alpha=0.05;
+weight count;
+title "Exact and Asymptotic 95% Confidence Intervals for Specificity - all results";
+run;
+
+data comparison_specificity;
+input test different count;
+format different yesnofmt.;
+cards;
+1 1 1426
+1 2 0
+2 1 11684
+2 2 5
+;
+run;
+
+proc freq data=comparison_specificity;
+tables different*test/chisq;
+exact chisq;
+weight count;
+title "Exact and Asymptotic Tests for Comparing Specificities";
+run;
+\end{lstlisting}
+
+\paragraph{}
+Let us now concentrate on comparing sensitivities. Let $p_1$ be the sensitivity of bucketized test and $p_2$ the sensitivity of the overall test. The exact 95\% confidence intervals for the bucketized test are (0.7527, 0.9244) and for the overall tests (0.3125, 0.3766). Also the \textit{p}-value from Fisher's exact test for testing $H_0 : p_1 = p_2$ is $<.0001$. The conclusion is that the bucketized test has a significantly better sensitivity that the overall tests which confirms our hypothesis.

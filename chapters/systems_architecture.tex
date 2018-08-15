@@ -265,6 +265,9 @@ The histograms that are obtained for two splint images may actually differ in si
 \paragraph{}
 The final result of the comparison, as already mentioned before, takes into consideration some slight differences in the dominant angle detection (does so be applying some artificial rotations in the process) and also for the size of the code (because the smaller one is searched through the larger one). Such a result - the similarity score - is then simply compared to a threshold value. If this outcome is greater than that threshold we can say that both images represent splint with the same code, which in our case means it represents the same splint. Otherwise, we can say that those images represent two different splints.
 
+\subsection{Importance of the image angle} \label{subsect:angle_importance}
+\paragraph{}
+As it later turned out, the angle under which an image was taken plays a very significant role. That is why in chapter \autoref{chap:results} results are split into angle buckets to point out this importance. Thus, if this solution was to be implemented in production usage, a consistent angle would be required to ensure the best possible performance of the presented algorithm.
 
 
 
