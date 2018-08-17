@@ -1,7 +1,6 @@
 \paragraph{}
 
-\section{OpenCV}
-\subsection{Image Thresholding}
+\section{Image Thresholding}
 \paragraph{Introduction}
 Thresholding is a process of creating binary image from a grayscale one.\cite{digital-image-processing} It is the simplest form of segmentation (separating image into regions). It uses the simplest property that pixels in a region can share - the intensity. Hence thresholding is a natural way of separating light and dark regions of the image. In simple words, all pixels with intensity value below some threshold are being assigned zero and all pixels with intensity above this threshold one. Pixels that are equal the threshold value are treated either as zero or one but the behaviour needs to be consistent. 
 
@@ -32,7 +31,7 @@ Figures \ref{fig:threshold_variants} and \ref{fig:threshold_examples} present th
 	\label{fig:threshold_examples}
 \end{figure}
 
-\subsection{Image Filtering}
+\section{Image Filtering}
 \paragraph{Introduction}
 Filtering is a technique for modifying or enhancing an image. It is used either to emphasize some features of the image or to remove some other. Images can be filtered with various low-pass filters (LPF) or high-pass filters (HPF). HPFs are useful for finding edges in the images whereas LPFs are used to remove noise and for image blurring.
 
@@ -150,7 +149,7 @@ To achieve smoothing effect, the image is convolved with a LPF kernel. This part
 	\item Bilateral - slower compared to other filters, but it keeps edges sharp
 \end{itemize}
 
-\subsection{Morphological Transformations}
+\section{Morphological Transformations}
 \paragraph{}
 Morphological transformations are operations based on the image shape. Two inputs are needed to perform such a transformation, one being the original image whereas the other, called kernel, decides the nature of operation. It is performed on binary images, with black background (having value 0) and white foreground (having value 1). Two most basic ones are erosion and dilation which will now be presented.
 
@@ -186,15 +185,15 @@ Figure \ref{fig:morphological_examples} shows both erosion and dilation applied 
 	\label{fig:morphological_examples}
 \end{figure}
 
-\subsection{Finding Contours}
+\section{Finding Contours}
 \paragraph{}
 A contour is a list of points that represent, in one way or another, a curve in an image.\cite{learning-opencv-3} They come in handy for analysing the shape of an object, for its detection and for recognition. For better results it is good to use binary images, so the process of contours finding should be applied after thresholding or edge detecting.
 
 \paragraph{}
 Figure \ref{fig:preprocessing} shows what the process of finding contours can lead to - detecting the shape of an object.
 
-\subsection{Edge Detection}
-\subsubsection{Derivatives and edges}
+\section{Edge Detection}
+\subsection{Derivatives and edges}
 An edge is a place of a sudden discontinuity in an image, which can arise from surface normal, surface color, depth, illumination, or other discontinuities. This rapid change in the image intensity function can be observed in places where the first derivative of this function has local extrema (see Figure \ref{fig:edge-detection}).\cite{edge-detection}
 \begin{figure}[H]
      \centering
@@ -207,7 +206,7 @@ An edge is a place of a sudden discontinuity in an image, which can arise from s
      \label{fig:edge-detection}
 \end{figure}
 
-\subsubsection{Image gradient}
+\subsection{Image gradient}
 The gradient points in the direction of most rapid increase in intensity and can be represented as:
 \begin{equation}
 	\nabla f = [\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}]
@@ -293,7 +292,7 @@ This can cause the result of applying the derivative operator to be unable to te
 	\label{fig:noise_impact}
 \end{figure}
 
-\subsubsection{Edge detection in general}
+\subsection{Edge detection in general}
 Primary edge detection steps include:
 \begin{itemize}
 	\item Smoothing derivatives to suppress noise and compute gradient
@@ -317,7 +316,7 @@ In particular, Canny edge operator consists of following steps\cite{canny-edge}:
 	\end{enumerate}
 \end{enumerate}
 
-\subsection{Hough Lines Detection}
+\section{Hough Lines Detection}
 \paragraph{Voting}
 is a general technique where we let all the features vote for all models that are compatible with it.
 \begin{enumerate}
