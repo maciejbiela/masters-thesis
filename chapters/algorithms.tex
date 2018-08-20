@@ -4,12 +4,18 @@
 \paragraph{Introduction}
 Thresholding is a process of creating binary image from a grayscale one.\cite{digital-image-processing} It is the simplest form of segmentation (separating image into regions). It uses the simplest property that pixels in a region can share - the intensity. Hence thresholding is a natural way of separating light and dark regions of the image. In simple words, all pixels with intensity value below some threshold are being assigned zero and all pixels with intensity above this threshold one. Pixels that are equal the threshold value are treated either as zero or one but the behaviour needs to be consistent. 
 
+\paragraph{}
+Let $f(x, y)$ be the gray level of pixel $(x, y)$ and $T$ be the threshold value, then the thresholded image $g(x, y)$ is defined as:
+
 \begin{equation}
 	g(x, y) = \begin{cases}
 		1 & \text{if $f(x, y) >= T$}\\
 		0 & \text{otherwise}
 	\end{cases}
 \end{equation}
+
+\paragraph{}
+Every point $(x, y)$ for which $f(x, y) >= T$ is then called an \textit{object point}, whereas all the other ones are said to be \textit{background points}.
 
 \paragraph{Problems with thresholding}
 The most significant issue with thresholding is the fact that only the intensity is considered and no relationship between pixels is. This can lead to the inclusion of external pixels that are not part of the original region. Similarly, isolated pixels can be lost from a region. The presence of noise in the image can easily worsen the outcome, because pixels intensity may not represent the normal intensity in the region. The usage of thresholding is often based on experimentation and small adjustments. Still, a large portion of a region may be lost or the area may be extended with extraneous background pixels (especially when shadows of objects are presents - which causes them to be included as part of dark object on a light background). One of the flaws of global image thresholding is also the fact that it is not particularly effective when changes in illumination occur in the image. This drawback can partially be mitigated by determining thresholds locally, so instead of a single global threshold value, the threshold itself can actually vary across different parts of the image.
@@ -292,7 +298,7 @@ This can cause the result of applying the derivative operator to be unable to te
 	\label{fig:noise_impact}
 \end{figure}
 
-\subsection{Edge detection in general}
+\subsection{Edge detection in general\cite{digital-image-processing}}
 Primary edge detection steps include:
 \begin{itemize}
 	\item Smoothing derivatives to suppress noise and compute gradient

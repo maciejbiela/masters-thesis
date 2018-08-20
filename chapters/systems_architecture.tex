@@ -35,7 +35,7 @@ The preprocessing of the image in our case means extracting from the input image
 Before computing the "barcode" representation of the rail there is a couple of steps required to enable processing. The primary goal is to extract the shape of the split from the image, effectively ignoring everything else. Let us now look at the first attempt to approach this task using following techniques:
 
 \begin{enumerate}
-	\item Image thresholding (binary) - it is a function that for a given grayscale pixel assigns one of two values {A, B}. A is assigned to all of the pixels with value greater than some threshold value and B otherwise.
+	\item Image thresholding (binary) - it is a function that for a given grayscale pixel\footnote{For color input, following RGB to grayscale transformation is used: \begin{equation*}Y \gets 0.299 * R + 0.587 * G + 0.114 * B\end{equation*}} assigns one of two values {A, B}. A is assigned to all of the pixels with value greater than some threshold value and B otherwise.
 	$$
 	threshold (pixel, T) = \begin{cases}
 		A, pixel.value > T \\
@@ -45,7 +45,7 @@ Before computing the "barcode" representation of the rail there is a couple of s
 	\item Finding contours - a function finding curves joining continuous points, having same colour or intensity
 \end{enumerate}
 
-\begin{algorithm}{\textbf{Extracting the shape of the split - first approach}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{extract}{$grayscale$}
@@ -57,6 +57,7 @@ Before computing the "barcode" representation of the rail there is a couple of s
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Extracting the shape of the split - first approach}
 \end{algorithm}
 
 The pseudocode presented above greatly simplifies the usage of OpenCV library. It does not provide any of the other required parameters for library functions and it also discards other return values. Function steps provide just the essential parts of the algorithm to present the idea. Regarding abstract functions, please ignore implementation details and just note that:
@@ -69,7 +70,7 @@ The pseudocode presented above greatly simplifies the usage of OpenCV library. I
 \paragraph{Improved algorithm}
 Further development of the preprocessing algorithm led to a little bit more complex series of steps. Instead of converting whole RGB image to grayscale, the multi-channel array is split into separate single-channel arrays. Empirical experiments showed that for the given set of input images best results can be obtained when using just the red colour channel. The thresholding phase is now executed with threshold value computed from the histogram (first, peak value that corresponds to the rail is found and then after performing simple algebraic operations is used to obtain the value). The thresholding process returns a binary image where white colour denotes area that is most likely a part of the rail and a black colour otherwise. Such a binary image then undergoes a series of corresponding image blurring (using median blur filter) and morphological opening (which is a series of erosions followed by dilations). To complete the process and fill some gaps that may have appeared in some of the previous phases, a fill holes procedure is applied.
 
-\begin{algorithm}{\textbf{Extracting the shape of the split - improved approach}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{extract}{$image$}
@@ -89,6 +90,7 @@ Further development of the preprocessing algorithm led to a little bit more comp
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Extracting the shape of the split - improved approach}
 \end{algorithm}
 
 \begin{figure}[H]
@@ -131,7 +133,7 @@ In order to reduce complexity of the processing phase, a need to find some optim
 \paragraph{}
 Let us now look at the algorithm for comparing two images. 
 
-\begin{algorithm}{\textbf{Comparing two preprocessed rail images}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{compare}{$image1, image2$}
@@ -153,6 +155,7 @@ Let us now look at the algorithm for comparing two images.
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Comparing two preprocessed rail images}
 \end{algorithm}
 
 \paragraph{}
@@ -164,7 +167,7 @@ Explanation
 	\item \textbf{findMaxComparisonResult(image1, image2)} - this function is returning the final comparison result. In order to alleviate some differences in the dominant angle resulting in slightly different rotations, this function itself also does some minor rotations for first of the images and each such rotation is being compared with the second image. Maximum value of those comparisons is then returned as the final value.
 \end{itemize}
 
-\begin{algorithm}{\textbf{Comparing two preprocessed rail images}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{dominantAngle}{$color\_image$}
@@ -185,6 +188,7 @@ Explanation
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Comparing two preprocessed rail images}
 \end{algorithm}
 
 \paragraph{}
@@ -209,7 +213,7 @@ In order to accommodate for some relic peaks, it is actually not the most freque
 \end{figure}
 
 \paragraph{}
-Figure \ref{fig:image_rotation} presents the already-extracted upper half of the rail surface before and after rotation. This procedure outputs an image, where the "barcode" lines are aligned perpendicular to the X-axis. After that, figure \ref{fig:code_with_histogram} shows the code that was read from the image (it actually is a single-row vector, only for graphing purposes that row is multiplied and we can see the code) and the histogram that corresponds to its grayscale values.
+Figure \ref{fig:image_rotation} presents the already-extracted upper half of the rail surface before and after rotation. This procedure outputs an image, where the "barcode" lines are aligned perpendicular to the X-axis. After that, figure \ref{fig:code_with_histogram} shows the code that was read from the image (it actually is a single-row vector, only for plotting purposes that row is multiplied and we can see the code) and the histogram that corresponds to its grayscale values.
 
 \paragraph{}
 The whole process of mapping the rail image to a barcode (single-row vector) was to reduce the dimensionality of the task on hand. Now it was just a matter of finding a smart way to compare this vectors and assign them some similarity score. This is where the histogram that was computed on the earlier stages comes in handy. There are already known methods of comparing them and one that was performing well was chosen in the comparison algorithm implementation.
@@ -228,7 +232,7 @@ and $N$ is the total number of bins in histogram.
 \paragraph{}
 The histograms that are obtained for two rail images may actually differ in sizes and for the aforementioned comparison method they need to be same-sized. That is why we take the shorter histogram and slide it over the longer one, do the comparison one offset at a time and take the highest from the output values.
 
-\begin{algorithm}{\textbf{Histogram comparison}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{compareHist}{$h1, h2$}	
@@ -242,9 +246,10 @@ The histograms that are obtained for two rail images may actually differ in size
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Histogram comparison}
 \end{algorithm}
 
-\begin{algorithm}{\textbf{Histogram comparison - helper function}}
+\begin{algorithm}
 	\begin{spacing}{1.5}
 	\begin{algorithmic}[1]
 		\Function{maxHistComparison}{$longer, shorter$}	
@@ -259,6 +264,7 @@ The histograms that are obtained for two rail images may actually differ in size
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
+	\caption{Histogram comparison - helper function}
 \end{algorithm}
 
 \paragraph{}
@@ -266,7 +272,7 @@ The final result of the comparison, as already mentioned before, takes into cons
 
 \subsection{Importance of the image angle} \label{subsect:angle_importance}
 \paragraph{}
-As it later turned out, the angle under which an image was taken plays a very significant role. That is why in chapter \autoref{chap:results} results are split into angle buckets to point out this importance. Thus, if this solution was to be implemented in production usage, a consistent angle would be required to ensure the best possible performance of the presented algorithm.
+As it later turned out, the angle under which an image was taken plays a very significant role. That is why in \autoref{chap:results} results are split into angle buckets to point out this importance. Thus, if this solution was to be implemented in production usage, a consistent angle would be required to ensure the best possible performance of the presented algorithm.
 
 
 

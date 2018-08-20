@@ -34,6 +34,8 @@
 
 \renewcommand{\baselinestretch}{1.15}
 
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
+
 \begin{document}
 
 \includepdf{title_page}
@@ -43,6 +45,8 @@
 \listoffigures
 \listoftables
 \lstlistoflistings
+\listofalgorithms
+\addcontentsline{toc}{chapter}{\listalgorithmname}
 
 \chapter{Introduction}
 \input{chapters/introduction}
