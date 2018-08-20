@@ -27,6 +27,7 @@ Figures \ref{fig:threshold_variants} and \ref{fig:threshold_examples} present th
 	\centering
 	\includegraphics[width=\textwidth]{images/thresholds}
 	\caption{Threshold variants in OpenCV}
+	\source{\cite{learning-opencv-3}, Figure 10-4}
 	\label{fig:threshold_variants}
 \end{figure}
 
@@ -210,6 +211,7 @@ An edge is a place of a sudden discontinuity in an image, which can arise from s
      \subfloat[Derivative of the intensity function]{\includegraphics[width=0.5\textwidth]{images/edge_first_derivative}}
      \caption{Edge detection}
      \label{fig:edge-detection}
+     \source{\cite{lazebnik-edge}, Slide 4}
 \end{figure}
 
 \subsection{Image gradient}
@@ -282,6 +284,7 @@ In the real world the intensity function is affected by noise and may look like 
 	\centering
 	\includegraphics[width=\textwidth]{images/noise_intensity_function}
 	\caption{Intensity function affected by noise}
+	\source{\cite{lazebnik-edge}, Slide 10}
 	\label{fig:noise_intensity_function}
 \end{figure}
 This can cause the result of applying the derivative operator to be unable to tell where the edge might be (see Figure \ref{fig:noise_derivative})
@@ -289,12 +292,14 @@ This can cause the result of applying the derivative operator to be unable to te
 	\centering
 	\includegraphics[width=\textwidth]{images/noise_derivative}
 	\caption{Derivative of the intensity function affected by noise}
+	\source{\cite{lazebnik-edge}, Slide 10}
 	\label{fig:noise_derivative}
 \end{figure}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{images/noise_impact}
 	\caption{Noise impact on the gradient image}
+	\source{\cite{modern-approach}, Figure 8.10}
 	\label{fig:noise_impact}
 \end{figure}
 
@@ -353,6 +358,7 @@ where $m$ represents the slope and $b$ the intercept with Y-axis.
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/hough_cartesian_equation}
 	\caption{Line represented in Cartesian coordinates}
+	\source{\cite{hough-lines-python}}
 	\label{fig:line_cartesian}
 \end{figure}
 Other possible representation of a line is in polar coordinates (see Figure \ref{fig:line_polar}):
@@ -367,6 +373,7 @@ where $\rho$ represents the perpendicular distance from origin to the line and $
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/hough_polar}
 	\caption{Line represented in polar coordinates}
+	\source{\cite{hough-lines-python}}
 	\label{fig:line_polar}
 \end{figure}
 
@@ -376,12 +383,14 @@ Let us now consider Image Space to be represented in polar coordinates. A line i
 	\centering
 	\includegraphics[width=\textwidth]{images/line_to_hough_space}
 	\caption{Line represented in Hough space}
+	\source{\cite{hough-lines}}
 	\label{fig:line_hough_space}
 \end{figure}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{images/lines_to_hough_space}
 	\caption{Bunch of lines with common point represented in Hough space}
+	\source{\cite{hough-lines}}
 	\label{fig:bunch_of_lines_hough_space}
 \end{figure}
 It turns out that a point in image space results in a sinusoid in Hough space.
@@ -389,6 +398,7 @@ It turns out that a point in image space results in a sinusoid in Hough space.
 	\centering
 	\includegraphics[width=\textwidth]{images/point_to_sinusoid}
 	\caption{Point in image space represented as sinusoid in Hough space}
+	\source{\cite{hough-lines}}
 	\label{fig:point_to_sinusoid}
 \end{figure}
 \begin{table}[H]
@@ -411,6 +421,7 @@ Finally, take a look at points that are forming a line in image space and their 
 	\centering
 	\includegraphics[width=\textwidth]{images/points_to_sinusoids}
 	\caption{Detecting a line in Hough space}
+	\source{\cite{hough-lines}}
 	\label{fig:line_detection_in_hough_space}
 \end{figure}
 
@@ -449,5 +460,6 @@ Figure \ref{fig:hough-line-transform} shows an edge image that contains two visi
      \hfill
      \subfloat[Lines found]{\includegraphics[width=0.3\textwidth]{images/hough_output}}
      \caption{Example of applying Hough Line Transform}
+     \source{\url{http://scikit-image.org/docs/0.9.x/auto_examples/plot_line_hough_transform.html}}
      \label{fig:hough-line-transform}
 \end{figure}
