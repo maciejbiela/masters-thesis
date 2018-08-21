@@ -227,6 +227,32 @@ Table \ref{tab:overall_results} presents the result of applying the comparison a
     \caption{Statistical measures of the algorithm - all data}
 \end{table}
 
+\paragraph{}
+The complete set of input data consisted of images of 13 actual rails. For every rail the number of images (different angles, different lighting) varied between 6 and 16 resulting in 158 images in total. The number of images with corresponding angles:
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|l|l|}
+		\hline
+		0$^{\circ}$		& 20 \\
+		\hline
+		45$^{\circ}$ 	& 17 \\
+		\hline
+		90$^{\circ}$ 	& 19 \\
+		\hline
+		135$^{\circ}$ 	& 20 \\
+		\hline
+		180$^{\circ}$ 	& 24 \\
+		\hline
+		225$^{\circ}$ 	& 19 \\
+		\hline
+		270$^{\circ}$ 	& 17 \\
+		\hline
+		315$^{\circ}$ 	& 22 \\
+		\hline
+	\end{tabular}
+	\caption{Bucketized data summary}	
+\end{table}
+
 \section{Hypothesis verification}
 \paragraph{}
 In subsection \ref{subsect:angle_importance} it was mentioned that the angle under which the photo was taken plays significant role. Hence, it is our hypothesis. To confirm that we can compare sensitivities and specificities of both tests: bucketized and for all inputs. Two-sample tests for binomial proportions are appropriate for this setting ($\chi^2$ test and Fisher's exact test)\cite{diagnostic-testing}. The following code listing \ref{lst:comparison} presents a SAS program that will help us confirming this hypothesis.

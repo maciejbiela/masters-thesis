@@ -58,17 +58,41 @@ Before computing the "barcode" representation of the rail there is a couple of s
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Extracting the shape of the split - first approach}
+	\label{alg:extract_shape_1st}
 \end{algorithm}
 
-The pseudocode presented above greatly simplifies the usage of OpenCV library. It does not provide any of the other required parameters for library functions and it also discards other return values. Function steps provide just the essential parts of the algorithm to present the idea. Regarding abstract functions, please ignore implementation details and just note that:
+\paragraph{}
+The Algorithm \ref{alg:extract_shape_1st} greatly simplifies the usage of OpenCV library - Open Source Computer Vision Library (\url{https://opencv.org/}), for which an overview is provided in \autoref{sec:opencv}. It does not provide any of the other required parameters for library functions and it also discards other return values. Function steps provide just the essential parts of the algorithm to present the idea. Regarding abstract functions, please ignore implementation details and just note that:
+
 \begin{enumerate}
 	\item \textbf{maxArea()} - finds the contour with maximal area amongst ones provided as the parameter
 	\item \textbf{createMask()} - creates a mask that includes the whole shape of contour (i.e. the edge and the interior) for a given contour
 	\item \textbf{cropImage()} - to a given image applies a given mask, effectively cutting out just those pixels specified by the mask 
 \end{enumerate}
 
+\paragraph{}
+The \textbf{cv2.} prefix in selected functions from Algorithm \ref{alg:extract_shape_1st} indicate that they come from second version of Python bindings for OpenCV. Please find excerpt from OpenCV documentation attached: \cite{opencv-docs}
+
+\begin{enumerate}
+	\item \textit{retval, dst} = \textbf{threshold}(\textit{src, thresh, maxval, type[, dst]}) - Applies a fixed-level threshold to each array element. The function returns the computed threshold value. \small{\begin{itemize}
+		\item \textit{src} - input array
+		\item \textit{thresh} - threshold value
+		\item \textit{maxval} - max value to use with the binary and binary inverse type
+		\item \textit{type} - thresholding type
+		\item \textit{dst} - output array
+	\end{itemize}}
+	\item \textit{image, contours, hierarchy} = \textbf{findContours}(\textit{image, mode, method[, contours[, hierarchy[, offset]]]}) - Finds contours in a binary image \small{\begin{itemize}
+		\item \textit{image} - source, an 8-bit single-channel image
+		\item \textit{mode} - contour retrieval mode
+		\item \textit{method} - contour approximation method
+		\item \textit{contours} - detected contours
+		\item \textit{hierarchy} - optional vector with information about the image topology
+		\item \textit{offset} - optional offset by which every contour point is shifted
+	\end{itemize}}
+\end{enumerate}
+
 \paragraph{Improved algorithm}
-Further development of the preprocessing algorithm led to a little bit more complex series of steps. Instead of converting whole RGB image to grayscale, the multi-channel array is split into separate single-channel arrays. Empirical experiments showed that for the given set of input images best results can be obtained when using just the red colour channel. The thresholding phase is now executed with threshold value computed from the histogram (first, peak value that corresponds to the rail is found and then after performing simple algebraic operations is used to obtain the value). The thresholding process returns a binary image where white colour denotes area that is most likely a part of the rail and a black colour otherwise. Such a binary image then undergoes a series of corresponding image blurring (using median blur filter) and morphological opening (which is a series of erosions followed by dilations). To complete the process and fill some gaps that may have appeared in some of the previous phases, a fill holes procedure is applied.
+Further development of the preprocessing algorithm led to a little bit more complex series of steps presented in Algorithm \ref{alg:extract_shape_2nd}. Instead of converting whole RGB image to grayscale, the multi-channel array is split into separate single-channel arrays. Empirical experiments showed that for the given set of input images best results can be obtained when using just the red colour channel. The thresholding phase is now executed with threshold value computed from the histogram (first, peak value that corresponds to the rail is found and then after performing simple algebraic operations is used to obtain the value). The thresholding process returns a binary image where white colour denotes area that is most likely a part of the rail and a black colour otherwise. Such a binary image then undergoes a series of corresponding image blurring (using median blur filter) and morphological opening (which is a series of erosions followed by dilations). To complete the process and fill some gaps that may have appeared in some of the previous phases, a fill holes procedure is applied.
 
 \begin{algorithm}
 	\begin{spacing}{1.5}
@@ -91,7 +115,19 @@ Further development of the preprocessing algorithm led to a little bit more comp
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Extracting the shape of the split - improved approach}
+	\label{alg:extract_shape_2nd}
 \end{algorithm}
+
+\paragraph{}
+Please find excerpt from OpenCV documentation, for function from Algorithm \ref{alg:extract_shape_2nd}, attached: \cite{opencv-docs}
+
+\begin{enumerate}
+	\item \textit{dst} = \textbf{medianBlur}(\textit{src, ksize[, dst]}) - Blurs an image using the median filter. \small{\begin{itemize}
+		\item \textit{src} - input
+		\item \textit{dst} - destination array of the same size and type as src
+		\item \textit{ksize} - aperture linear size; it must be odd and greater than 1
+	\end{itemize}}
+\end{enumerate}
 
 \begin{figure}[H]
      \centering
@@ -189,7 +225,37 @@ Explanation
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Comparing two preprocessed rail images}
+	\label{alg:comparing}
 \end{algorithm}
+
+\paragraph{}
+Please find excerpt from OpenCV documentation, for functions from Algorithm \ref{alg:comparing}, attached: \cite{opencv-docs}
+
+\begin{enumerate}
+	\item \textit{dst} = \textbf{cvtColor}(\textit{src, code[, dst[, dstCn]]}) - Converts an image from one color space to another. \small{\begin{itemize}
+		\item \textit{src} - input image
+		\item \textit{dst} - output image of the same size and depth as src
+		\item \textit{code} - color space conversion code
+		\item \textit{dstCn} - number of channels in the destination image
+	\end{itemize}}
+	\item \textit{edges} = \textbf{Canny}(\textit{image, threshold1, threshold2[, edges[, apertureSize[, L2gradient]]]}) - Finds edges in an image using the Canny algorithm. \small{\begin{itemize}
+		\item \textit{image} - source, an 8-bit single-channel image
+		\item \textit{edges} - output edge map
+		\item \textit{threshold1} - first threshold for the hysteresis procedure
+		\item \textit{threshold2} - second threshold for the hysteresis procedure
+		\item \textit{apertureSize} - aperture size for the Sobel operator
+		\item \textit{L2gradient} - a flag, indicating whether a more accurate $L_2$ norm
+	\end{itemize}}
+	\item \textit{lines} = \textbf{HoughLinesP}(\textit{image, rho, theta, threshold[, lines[, minLineLength[, maxLineGap]]]}) - Finds line segments in a binary image using the probabilistic Hough transform. \small{\begin{itemize}
+		\item \textit{image} - source, an 8-bit single-channel image
+		\item \textit{lines} - output vector of lines
+		\item \textit{rho} - distance resolution of the accumulator in pixels
+		\item \textit{theta} - angle resolution of the accumulator in radians
+		\item \textit{threshold} - accumulator threshold parameter
+		\item \textit{minLineLength} - min line length
+		\item \textit{maxLineGap} - max allowed gap between points on the same line to link them	
+	\end{itemize}}
+\end{enumerate}
 
 \paragraph{}
 In order to accommodate for some relic peaks, it is actually not the most frequently occurring angle but it is accumulatively taken within 3 degrees and only then the max is picked.
