@@ -62,7 +62,7 @@ Before computing the "barcode" representation of the rail there is a couple of s
 \end{algorithm}
 
 \paragraph{}
-The Algorithm \ref{alg:extract_shape_1st} greatly simplifies the usage of OpenCV library - Open Source Computer Vision Library (\url{https://opencv.org/}), for which an overview is provided in \autoref{sec:opencv}. It does not provide any of the other required parameters for library functions and it also discards other return values. Function steps provide just the essential parts of the algorithm to present the idea. Regarding abstract functions, please ignore implementation details and just note that:
+The Algorithm \ref{alg:extract_shape_1st} greatly simplifies the usage of OpenCV library - Open Source Computer Vision Library (\url{https://opencv.org/}), for which an overview is provided in \autoref{sec:opencv}. It does not provide any of the other required parameters for library functions and it also discards other return values. Function steps provide just the essential parts of the algorithm to present the idea. In line 2, a thresholding operation is applied to distinguish foreground and background on the image. Line 3, for previously obtained binary input, detects contours. Then, in line 4, a contour with maximal area is selected, from which a mask is created in line 5. That mask is then used, in line 6, to cut the foreground from the original input image. Please find high-level information about used functions:
 
 \begin{enumerate}
 	\item \textbf{maxArea()} - finds the contour with maximal area amongst ones provided as the parameter
@@ -119,6 +119,9 @@ Further development of the preprocessing algorithm led to a little bit more comp
 \end{algorithm}
 
 \paragraph{}
+Let us now look at the Algorithm \ref{alg:extract_shape_2nd}. In line 2, red channel is taken from the input image. Next, in line 3, a thresholding value is selected as the most-frequently occurring red value and is used in line 4 to perform the actual threshold. In line number 5 a blurring operation is applied to the binary output of thresholding. The loop in lines 6 to 9 performs repetitive opening and blurring of binary image. After the loop finishes, any holes that might have occurred, are treated as foreground, in line 10. Lines 11-14 repeat last steps from previous Algorithm \ref{alg:extract_shape_1st}.
+
+\paragraph{}
 Please find excerpt from OpenCV documentation, for function from Algorithm \ref{alg:extract_shape_2nd}, attached: \cite{opencv-docs}
 
 \begin{enumerate}
@@ -167,7 +170,7 @@ Assuming we have such an algorithm and thus a successful preprocessing phase, in
 In order to reduce complexity of the processing phase, a need to find some optimizations emerged. One of the solutions that was under investigation was to scale the image down - but it led to more noise being introduced and thus the comparison results being less accurate. Experiments and development of the processing algorithm showed that the most significant part for the comparison of barcodes lies in the upper half of the rail surface - the "ellipse-shaped" part of it. It is due to the fact that this area is the most stable across all of the images in terms of the barcode readability and consistency. This is why the lower part of the image is actually dropped altogether from the analysis.
 
 \paragraph{}
-Let us now look at the algorithm for comparing two images. 
+Let us now look at the Algorithm \ref{alg:comparing} for comparing two images. Lines 2 and 3 are responsible for taking just the upper half of both input images. Next, in lines 4 and 5, dominant angles for both upper halves are found. The conditional expression in lines 6-9 detects a difference in dominant angles higher than the admissible threshold and immediately signals that the two images show different rails if this threshold is crossed. In lines 9 and 10 both upper halves are rotated so that the barcode is perpendicular to the X-axis. In line 11 a function is called to find the maximal comparison result of the two rotated images. It performs also some slight rotations to accommodate for some minor differences in detected dominant angles. Finally, in line 12, the returned result is verified and if it is satisfactory, then we assume the original input images show the same rail. Otherwise, the output is negative. 
 
 \begin{algorithm}
 	\begin{spacing}{1.5}
@@ -176,8 +179,8 @@ Let us now look at the algorithm for comparing two images.
 			\State $image1\_up \gets$ upper half from the $image1$
 			\State $image2\_up \gets$ upper half from the $image2$
 			
-			\State $angle1 \gets \textbf{dominantAngle}(image1)$
-			\State $angle2 \gets \textbf{dominantAngle}(image2)$
+			\State $angle1 \gets \textbf{dominantAngle}(image1\_up)$
+			\State $angle2 \gets \textbf{dominantAngle}(image2\_up)$
 			
 			\If{$\textbf{abs}(angle1 - angle2) > \textbf{THRESHOLD\_ANGLE}$}
 				\State \textbf{return} FALSE
@@ -192,16 +195,17 @@ Let us now look at the algorithm for comparing two images.
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Comparing two preprocessed rail images}
+	\label{alg:comparing}
 \end{algorithm}
 
-\paragraph{}
-Explanation
-
 \begin{itemize}
-	\item \textbf{dominantAngle(image)} - this function finds the most frequent angle amongst the lines that create the pattern. The image first undergoes Canny Edge detection, so line detection algorithm can later be used. It does so by utilising OpenCV's \textbf{HoughLinesP} function from which those angles can be computed, rounded and the dominant one is selected. The pseudocode and some explanation for this algorithm is provided later in this chapter.
+	\item \textbf{dominantAngle(image)} - this function finds the most frequent angle amongst the lines that create the pattern. The image first undergoes Canny Edge detection, so line detection algorithm can later be used. It does so by utilising OpenCV's \textbf{HoughLinesP}\footnote{It works similar to the standard Hough line transformation, that is described in \autoref{sec:hough_lines} with two important differences. The lines are represented as start and end points. The second difference is the ability to specify the minimum length of a line segment and the separation between collinear segments required for the algorithm not to join them into a single longer segment.\cite{learning-opencv-3}} function from which those angles can be computed, rounded and the dominant one is selected. The pseudocode and some explanation for this algorithm is provided later in this chapter.
 	\item \textbf{rotate(image, angle)} - this function simply rotates the image by a given angle. It is used to point the lines that form the patter perpendicular to X-axis.
 	\item \textbf{findMaxComparisonResult(image1, image2)} - this function is returning the final comparison result. In order to alleviate some differences in the dominant angle resulting in slightly different rotations, this function itself also does some minor rotations for first of the images and each such rotation is being compared with the second image. Maximum value of those comparisons is then returned as the final value.
 \end{itemize}
+
+\paragraph{}
+Algorithm \ref{alg:dominant_angle} detects the most-frequently occurring angle among the lines on the rail's surface. In line 2 light is equalized, then, in line 3, a color space conversion to grayscale is applied. Such an image is passed to Canny function for edge detection in line 4. Next an accumulator array for detected angles is created in line 5 and, in line 6, probabilistic Hough lines transform is applied to the detected edges. The loop in lines 7 through 12, for each line that was reported from the Hough transform, the angle is computed and added to the accumulator. In line 13, a histogram of the angles is created, and the dominant one is chosen in lines 14 and 15.
 
 \begin{algorithm}
 	\begin{spacing}{1.5}
@@ -224,12 +228,12 @@ Explanation
 		\EndFunction
 	\end{algorithmic}
 	\end{spacing}
-	\caption{Comparing two preprocessed rail images}
-	\label{alg:comparing}
+	\caption{Finding the dominant angle}
+	\label{alg:dominant_angle}
 \end{algorithm}
 
 \paragraph{}
-Please find excerpt from OpenCV documentation, for functions from Algorithm \ref{alg:comparing}, attached: \cite{opencv-docs}
+Please find excerpt from OpenCV documentation, for functions from Algorithm \ref{alg:dominant_angle}, attached: \cite{opencv-docs}
 
 \begin{enumerate}
 	\item \textit{dst} = \textbf{cvtColor}(\textit{src, code[, dst[, dstCn]]}) - Converts an image from one color space to another. \small{\begin{itemize}
@@ -279,7 +283,10 @@ In order to accommodate for some relic peaks, it is actually not the most freque
 \end{figure}
 
 \paragraph{}
-Figure \ref{fig:image_rotation} presents the already-extracted upper half of the rail surface before and after rotation. This procedure outputs an image, where the "barcode" lines are aligned perpendicular to the X-axis. After that, figure \ref{fig:code_with_histogram} shows the code that was read from the image (it actually is a single-row vector, only for plotting purposes that row is multiplied and we can see the code) and the histogram that corresponds to its grayscale values.
+Figure \ref{fig:image_rotation} presents the already-extracted upper half of the rail surface before and after rotation. This procedure outputs an image, where the "barcode" lines are aligned perpendicular to the X-axis. 
+
+\paragraph{}
+After that, figure \ref{fig:code_with_histogram} shows the code that was read from the image (it actually is a single-row vector, only for plotting purposes that row is multiplied and we can see the code) and the histogram that corresponds to its grayscale values.
 
 \paragraph{}
 The whole process of mapping the rail image to a barcode (single-row vector) was to reduce the dimensionality of the task on hand. Now it was just a matter of finding a smart way to compare this vectors and assign them some similarity score. This is where the histogram that was computed on the earlier stages comes in handy. There are already known methods of comparing them and one that was performing well was chosen in the comparison algorithm implementation.
@@ -313,6 +320,7 @@ The histograms that are obtained for two rail images may actually differ in size
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Histogram comparison}
+	\label{alg:hist_comparison}
 \end{algorithm}
 
 \begin{algorithm}
@@ -331,7 +339,11 @@ The histograms that are obtained for two rail images may actually differ in size
 	\end{algorithmic}
 	\end{spacing}
 	\caption{Histogram comparison - helper function}
+	\label{alg:hist_comparison_helper}
 \end{algorithm}
+
+\paragraph{}
+Let us now look at the Algorithm \ref{alg:hist_comparison_helper}. In lines 2 and 3 the length of the shorter histogram is obtained as well as the difference in sizes between two input histograms. The variable $max\_result$ is then set to -1 to notify that no actual check was yet performed. And then the loop, in lines 5 through 8, performs histogram comparison with increasing offset on the longer histogram and assigns to $max\_result$ the maximum of the actual $max\_result$ and the new comparison result. Finally, in line 9 the overall maximum result is returned.
 
 \paragraph{}
 The final result of the comparison, as already mentioned before, takes into consideration some slight differences in the dominant angle detection (does so be applying some artificial rotations in the process) and also for the size of the code (because the smaller one is searched through the larger one). Such a result - the similarity score - is then simply compared to a threshold value. If this outcome is greater than that threshold we can say that both images represent rail with the same code, which in our case means it represents the same rail. Otherwise, we can say that those images represent two different rails.
