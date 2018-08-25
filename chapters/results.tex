@@ -3,6 +3,11 @@
 \paragraph{}
 Let us now look at the outcomes. Inputs have been grouped into buckets depending of the angle of the rail in the image by a step of 45$^{\circ}$. It resulted in very satisfying results as presented in the tables below - both for individual angles (tables \ref{tab:results_angle_0} through \ref{tab:results_angle_315}) and also in total (aggregated data from all buckets) - table \ref{tab:bucketized_results}.
 
+    %\label{tab:results_angle_0}
+    %\label{tab:results_angle_315}
+    %\label{tab:bucketized_results}
+    %\label{tab:overall_results}
+
 \begin{table}[H]
     \centering
 	\begin{spacing}{1.5}    
@@ -155,23 +160,23 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
 	\begin{spacing}{1.5}    
     \begin{tabular}{|l|l|l|}
         \hline
-        Sensitivity                 & 0.8533333333333334 \\
+        Sensitivity                 & 0.85 \\
         \hline
-        Specificity                 & 1.0 \\
+        Specificity                 & 1.00 \\
         \hline
-        Positive predictive value   & 1.0 \\
+        Positive predictive value   & 1.00 \\
         \hline
-        Negative predictive value   & 0.9923451635351427 \\
+        Negative predictive value   & 0.99 \\
         \hline
-        False positive rate         & 0.0 \\
+        False positive rate         & 0.00 \\
         \hline
-        False negative rate         & 0.1466666666666666 \\
+        False negative rate         & 0.15 \\
         \hline
-        False discovery rate        & 0.0 \\
+        False discovery rate        & 0.00 \\
         \hline
-        Accuracy                    & 0.9926715522984677 \\
+        Accuracy                    & 0.99 \\
         \hline
-        F1 score                    & 0.920863309352518 \\
+        F1 score                    & 0.92 \\
         \hline
     \end{tabular}
     \end{spacing}
@@ -183,20 +188,20 @@ Let us now look at the outcomes. Inputs have been grouped into buckets depending
 Table \ref{tab:overall_results} presents the result of applying the comparison algorithm across the whole set of input images.
 
 \begin{table}[H]
-    \centering
     \begin{spacing}{1.5}
+    \centering
     \begin{tabular}{|l|l|l|}
         \hline
         \cellcolor{gray} & \textbf{Output: Same} & \textbf{Output: Different} \\ [0.5ex]
         \hline\hline
-        \textbf{Actual: Same} & 300 & 572 \\ [0.5ex]
+        \textbf{Actual: Same} & 302 & 570 \\ [0.5ex]
         \hline
         \textbf{Actual: Different} & 5 & 11684 \\ [0.5ex]
         \hline
     \end{tabular}
-    \end{spacing}
     \caption{Overall results}
     \label{tab:overall_results}
+    \end{spacing}
 \end{table}
         
 \begin{table}[H]
@@ -204,23 +209,23 @@ Table \ref{tab:overall_results} presents the result of applying the comparison a
     \begin{spacing}{1.5}
     \begin{tabular}{|l|l|l|}
         \hline
-        Sensitivity                 & 0.3440366972477064 \\
+        Sensitivity                 & 0.35 \\
         \hline
-        Specificity                 & 0.9995722474120968 \\
+        Specificity                 & 1.00 \\
         \hline
-        Positive predictive value   & 0.9836065573770492 \\
+        Positive predictive value   & 0.98 \\
         \hline
-        Negative predictive value   & 0.9533289817232375 \\
+        Negative predictive value   & 0.95 \\
         \hline
-        False positive rate         & 0.00042775258790317405 \\
+        False positive rate         & 0.00 \\
         \hline
-        False negative rate         & 0.6559633027522935 \\
+        False negative rate         & 0.65 \\
         \hline
-        False discovery rate        & 0.016393442622950838 \\
+        False discovery rate        & 0.02 \\
         \hline
-        Accuracy                    & 0.9540641668656954 \\
+        Accuracy                    & 0.95 \\
         \hline
-        F1 score                    & 0.5097706032285472 \\
+        F1 score                    & 0.51 \\
         \hline
     \end{tabular}
     \end{spacing}
@@ -281,8 +286,8 @@ data sensitivity_diag2;
 input same count;
 format same yesnofmt.;
 cards;
-1 300
-2 572
+1 302
+2 570
 ;
 run;
 
@@ -298,8 +303,8 @@ format same yesnofmt.;
 cards;
 1 1 64 
 1 2 11 
-2 1 300
-2 2 572 
+2 1 302
+2 2 570 
 ;
 run;
 
@@ -360,4 +365,4 @@ run;
 \end{lstlisting}
 
 \paragraph{}
-Let us now concentrate on comparing sensitivities. Let $p_1$ be the sensitivity of bucketized test and $p_2$ the sensitivity of the overall test. The exact 95\% confidence intervals for the bucketized test are (0.7527, 0.9244) and for the overall tests (0.3125, 0.3766). Also the \textit{p}-value from Fisher's exact test for testing $H_0 : p_1 = p_2$ is $<.0001$. The conclusion is that the bucketized test has a significantly better sensitivity that the overall tests which confirms our hypothesis.
+Let us now concentrate on comparing sensitivities. Let $p_1$ be the sensitivity of bucketized test and $p_2$ the sensitivity of the overall test. The exact 95\% confidence intervals for the bucketized test are (0.7527, 0.9244) and for the overall tests (0.3148, 0.3790). Also the \textit{p}-value from Fisher's exact test for testing $H_0 : p_1 = p_2$ is $<.0001$. The conclusion is that the bucketized test has a significantly better sensitivity that the overall tests which confirms our hypothesis.
