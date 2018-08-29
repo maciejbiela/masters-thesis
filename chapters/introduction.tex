@@ -2,11 +2,11 @@
 \paragraph{}
 The purpose of this thesis was to develop computer software that would be able to recognise casting details that appear on the surface of rails. More specifically, the purpose of the software is to determine whether two images contain the same exact rail. It is not the shape of the rail that is to be compared because all of them are the same. The distinction is to be found on the surface, where some line patterns can be found. The alignment and thickness of those lines can be thought of as something that resembles a barcode. 
 \paragraph{}
-On the contrary to a regular barcode, the patterns on the rail's surface are not purely black and white, nor are the lines perfectly vertical. Moreover, it can happen that one part of a rail contains lines forming a different angle that lines on other part of the same rail. Another difficulty that needed to be addressed was the variety of angles of the split in the image itself as well as different lightning conditions. Some of the input images were overexposed whereas others were underexposed. Some inputs even had the line pattern heavily blurred. 
+On the contrary to a regular barcode, the patterns on the rail's surface are not purely black and white, nor are the lines perfectly vertical. Moreover, it can happen that one part of a rail contains lines forming a different angle that lines on other part of the same rail. Another difficulty that needed to be addressed was the variety of angles of the rail in the image itself, as well as different lightning conditions. Some of the input images were overexposed, whereas others were underexposed. Some inputs even had the line pattern heavily blurred. 
 
 \section{Idea}
 \paragraph{}
-Let us now look at the high level idea of how to solve this problem. What we aim to do is to map the input image to a code that can later be compared.
+Let us now look at the high level idea of the approach to solve this problem. What we aim to do is to map the input image to a code that can later be compared.
 \paragraph{}
 Figure \ref{fig:example_of_a_rail} shows one of the rails, we can observe the shape that all of them share and the unique pattern on the surface. 
 \begin{figure}[H]
@@ -39,4 +39,4 @@ The code from the pattern in figure \ref{fig:pattern_to_code} was computed simpl
      \label{fig:regular_vs_pattern_code}
 \end{figure}
 \paragraph{}
-After the code is found we need a way to compare them. It cannot simply be direct comparison, but rather defining some metric of similarity and if the output is above some threshold value we will say, that the codes are equal.
+After the codes are found we need a way to compare them. It cannot simply be direct comparison, but rather a metric of similarity needs to be defined. Having such a metric, if the outcome will be above some established threshold value, we will say, that the rails under comparison are the same object.

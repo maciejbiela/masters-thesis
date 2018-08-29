@@ -1,8 +1,8 @@
 \paragraph{}
 
-\section{Image Thresholding}
+\section{Image Thresholding}\label{sec:image_thresholding}
 \paragraph{Introduction}
-Thresholding is a process of creating binary image from a grayscale one.\cite{digital-image-processing} It is the simplest form of segmentation (separating image into regions). It uses the simplest property that pixels in a region can share - the intensity. Hence thresholding is a natural way of separating light and dark regions of the image. In simple words, all pixels with intensity value below some threshold are being assigned zero and all pixels with intensity above this threshold one. Pixels that are equal the threshold value are treated either as zero or one but the behaviour needs to be consistent. 
+Thresholding is a process of creating binary image from a grayscale one.\cite{digital-image-processing} It is the simplest form of segmentation (separating image into regions). It uses the simplest property that pixels in a region can share - the intensity. Hence, thresholding is a natural way of separating light and dark regions of the image. In simple words, all pixels with intensity value below some threshold are being assigned zero and all pixels with intensity above this threshold one. Pixels that are equal the threshold value are treated either as zero or one but the behaviour needs to be consistent. 
 
 \paragraph{}
 Let $f(x, y)$ be the gray level of pixel $(x, y)$ and $T$ be the threshold value, then the thresholded image $g(x, y)$ is defined as:
@@ -48,11 +48,11 @@ This are basic operations that can be applied in order to extract information fr
 	\item Linearity
 	\item Shift-invariance
 \end{itemize}
-Let us now look at correlation in 2D. Given a square filter with odd number of elements represented by a $(2N + 1)$ x $(2N + 1)$ matrix $F$ and the image matrix $I$, the results of correlation can be computed by aligning the center of the filter with a pixel. Overlapping values are then multiplied together and summed up to make the result corresponding to that given pixel. It can be written as
+Let us now look at correlation in 2D. Given a square filter with odd number of elements represented by a $(2N + 1)$ x $(2N + 1)$ matrix $F$ ($N \in \mathbb{N}$) and the image matrix $I$, the results of correlation can be computed by aligning the center of the filter with a pixel. Overlapping values are then multiplied together and summed up to make the result corresponding to that given pixel. It can be written as:
 \begin{equation}
 	(F \otimes I)(x, y) = \sum_{i = -N}^{N}\sum_{j = -N}^{N}F(i, j)I(x + i, y + j)
 \end{equation}
-Convolution is very similar to correlation, but the filter is flipped both horizontally and vertically beforehand. 
+Convolution is very similar to correlation, but the filter is flipped both horizontally and vertically beforehand:
 \begin{equation}
 	(F \star I)(x, y) = \sum_{i = -N}^{N}\sum_{j = -N}^{N}F(i, j)I(x - i, y - j)
 \end{equation}
@@ -144,8 +144,10 @@ The key distinction before the two operations is the associative property of con
 \begin{equation}
 	\forall F, G - filters \quad \forall I - image: F \star (G \star I) = (F \star G) \star I
 \end{equation}
-This property is useful when there is need to convolve image with multiple filters. It is computationally faster to precompute the final filter as convolution of original filters and apply just one convolution to the input image. Convolutions are used for image processing operations such as smoothing whereas correlations are useful for matching templates.
-One final notice, that for symmetrical filters convolution and correlation are identical.
+This property is useful when there is a need to convolve image with multiple filters. It is computationally faster to precompute the final filter as convolution of original filters and apply just one convolution to the input image. Convolutions are used for image processing operations such as smoothing, whereas correlations are useful for matching templates.
+
+\paragraph{}
+One final note is, that for symmetrical filters convolution and correlation are identical.
 
 \paragraph{Image blurring}
 To achieve smoothing effect, the image is convolved with a LPF kernel. This particular type of filtering removes high frequency content from the image (for example noise). Unfortunately, edges also can be blurred a bit while applying this operation, although there are also smoothing filters that prevent edges from being blurred. The OpenCV library provides user with various filters amongst which the most popular ones are:
