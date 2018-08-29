@@ -215,13 +215,13 @@ An edge is a place of a sudden discontinuity in an image, which can arise from s
 \end{figure}
 
 \subsection{Image gradient}
-The gradient points in the direction of most rapid increase in intensity and can be represented as:
+The gradient of a scalar function $f(x, y)$, where $f: \mathbb{R}^2 \rightarrow \mathbb{R}$ is denoted $\nabla f$ (where $\nabla$ is the nabla symbol). In two-dimensional Cartesian coordinate system with the Euclidean metric, the gradient, if exists, is given by:
 \begin{equation}
 	\nabla f = [\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}]
 \end{equation}
-The direction of the gradient is given by:
+It points in the direction of most rapid increase in intensity and that direction is given by:
 \begin{equation}
-	\theta = tan^{-1}(\frac{\partial f}{\partial y} / \frac{\partial f}{\partial x})
+	\theta = tan^{-1}(\frac{\frac{\partial f}{\partial y}}{\frac{\partial f}{\partial x}})
 \end{equation}
 And, finally, the \textit{amount of change} is given by the gradient magnitude:
 \begin{equation}
@@ -365,7 +365,7 @@ Other possible representation of a line is in polar coordinates (see Figure \ref
 \begin{equation}
 	\rho = x \cos\theta + y \sin\theta
 \end{equation}
-where $\rho$ represents the perpendicular distance from origin to the line and $\theta$ the angle the perpendicular makes with with the X-axis.
+where non-negative $\rho$ represents the perpendicular distance from origin to the line and $\theta \in [0, 2\pi)$ the angle the perpendicular makes with with the X-axis.
 \begin{note}
 	The OpenCV implementation of the Hough Lines algorithm returns the $\theta$ with values from range $[0, \pi]$ and allows negative $\rho$.
 \end{note}

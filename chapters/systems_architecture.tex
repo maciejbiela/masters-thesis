@@ -1,9 +1,9 @@
-\section{Deployment Diagram}
+\section{The idea of the system}
 The system is designed to take two images of rails and output the comparison result. In order to obtain a photo of the rail a camera is used, that captures the alignment of the lines on the surface of the split, then that image is being passed to the program that performs the recognition and comparison process.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{images/deployment_diagram}
-	\caption{Deployment Diagram}
+	\caption{The idea of the system}
 \end{figure}
 
 \section{Image Acquisition}
@@ -149,8 +149,12 @@ Please find excerpt from OpenCV documentation, for function from Algorithm \ref{
 \section{Image Processing}
 \paragraph{}
 Given that the main purpose of the thesis is the identification of foundry details, we can skip further contemplation of the preprocessing phase. The shape detection and extraction can be treated as a separate algorithm that needs to be developed and fine-tuned.
+
 \paragraph{}
 Assuming we have such an algorithm and thus a successful preprocessing phase, in the actual computing phase the input images contain only the surfaces of the rails (see figure \ref{fig:preprocessing_outputs}).
+
+\paragraph{Note}
+The actual input images for the processing phase, as shown in figure \ref{fig:preprocessing_outputs}, were prepared manually. It was done using free and open source image editor GIMP (\url{https://www.gimp.org/}), by utilizing its' \textit{Free Select Tool}.
 
 \begin{figure}[H]
      \centering
@@ -292,16 +296,31 @@ After that, figure \ref{fig:code_with_histogram} shows the code that was read fr
 The whole process of mapping the rail image to a barcode (single-row vector) was to reduce the dimensionality of the task on hand. Now it was just a matter of finding a smart way to compare this vectors and assign them some similarity score. This is where the histogram that was computed on the earlier stages comes in handy. There are already known methods of comparing them and one that was performing well was chosen in the comparison algorithm implementation.
 
 \paragraph{}
-To actually compare two histograms $H_1$ and $H_2$ a metric $d(H_1, H_2)$ is to be chosen. The algorithm uses \textbf{correlation} (which is selected by using \textbf{CV\_HISTCMP\_CORREL} flag for OpenCV's \textit{compareHist} function). The metric is then defined as:
+In order to actually compare two histograms $H$ (equation \ref{eq:hist_H}) and $G$ (equation \ref{eq:hist_G}) with the same number of bins\footnote{$h_1$ is the number of elements in the first bin, $h_2$ in the second bin, e.t.c. The same holds true for $g_1$, $g_2$, \dots, $g_n$}:
+
 \begin{equation}
-	d(H_1, H_2) = \frac{\sum_I(H_1(I) - \bar{H_1})(H_2(I) - \bar{H_2})}{\sqrt{\sum_I(H_1(I) - \bar{H_1})^2 \sum_I(H_2(I) - \bar{H_2})^2}}
+	H = \{h_1, h_2, \dots, h_n\}
+	\label{eq:hist_H}
+\end{equation}
+
+\begin{equation}
+	G = \{g_1, g_2, \dots, g_n\}
+	\label{eq:hist_G}
+\end{equation}
+a metric $d(H, G)$ is to be chosen. The algorithm uses \textbf{correlation} (which is selected by using \textbf{CV\_HISTCMP\_CORREL} flag for OpenCV's \textit{compareHist} function). The metric is then defined as:
+\begin{equation}
+	d(H, G) = \frac{\sum_{i=1}^{n}(h_i - \bar{h})(g_i - \bar{g})}{\sqrt{\sum_{i=1}^{n}(h_i - \bar{h})^2 \sum_{i=1}^{n}(g_i - \bar{g})^2}}
 	\label{eq:hist_comparison}
 \end{equation}
 where:
 \begin{equation}
-	\bar{H_k} = \frac{1}{N} \sum_J H_k(J)
+	\bar{h} = \frac{1}{n} \sum_{i=1}^{n} h_i
 \end{equation}
-and $N$ is the total number of bins in histogram.
+and:
+\begin{equation}
+	\bar{g} = \frac{1}{n} \sum_{i=1}^{n} g_i
+\end{equation}
+while $n$ being the total number of bins in histogram.
 
 \paragraph{Example}
 Let us now look at a concrete example of comparing two histograms. Suppose we have two input arrays
@@ -309,13 +328,13 @@ Let us now look at a concrete example of comparing two histograms. Suppose we ha
 
 
 \begin{equation*}
-	A_1 = [0,0,1,1,1,1,2,2,2]
+	A_H = [0,0,1,1,1,1,2,2,2]
 \end{equation*}
 
 and
 
 \begin{equation*}
-	A_2 = [0,0,1,1,1,2,2,2,2]
+	A_G = [0,0,1,1,1,2,2,2,2]
 \end{equation*}
 
 \paragraph{}
@@ -326,7 +345,7 @@ Table \ref{tab:histogram_comparison} shows count of different values in both inp
 	\begin{spacing}{1.5}    
     \begin{tabular}{|l|l|l|}
         \hline
-        \cellcolor{gray} & \textbf{$H_1$} & \textbf{$H_2$} \\ [0.5ex]
+        \cellcolor{gray} & \textbf{$H$} & \textbf{$G$} \\ [0.5ex]
         \hline\hline
         \textbf{0} & 2 & 2 \\ [0.5ex]
         \hline
@@ -336,7 +355,7 @@ Table \ref{tab:histogram_comparison} shows count of different values in both inp
         \hline
     \end{tabular}
     \end{spacing}
-    \caption{Histograms for $A_1$ ($H_1$) and $A_2$ ($H_2$)}
+    \caption{Histograms for $A_H$ ($H$) and $A_G$ ($G$)}
     \label{tab:histogram_comparison}
 \end{table}
 
@@ -345,24 +364,34 @@ Table \ref{tab:histogram_comparison} shows count of different values in both inp
      \subfloat[]{\includegraphics[width=0.45\textwidth]{images/histogram_1}}
      \qquad
      \subfloat[]{\includegraphics[width=0.45\textwidth]{images/histogram_2}}
-     \caption{Plots of histograms for $A_1$ (a) and $A_2$ (b)}
+     \caption{Plots of histograms $H$ (a) and $G$ (b)}
      \label{fig:histogram_comparison_plot}
 \end{figure}
 
-\paragraph{}
-Let us now compute the average values $\bar{H_1}$ and $\bar{H_2}$:
+The histograms can then be represented as follows:
+
+\begin{equation*}
+	H = \{h_1, h_2, h_3\} = \{2, 4, 3\}
+\end{equation*}
+
+and:
+
+\begin{equation*}
+	G = \{g_1, g_2, g_3\} = \{2, 3, 4\}
+\end{equation*}
+
+The average values $\bar{h}$ and $\bar{g}$ can now be computed:
 
 \begin{equation}
-	\bar{H_1} = \frac{1}{3} * (2 + 4 + 3) = \frac{1}{3} * 9 = 3
+	\bar{h} = \frac{1}{3} * (2 + 4 + 3) = \frac{1}{3} * 9 = 3
 	\label{eq:h_1_avg}
 \end{equation}
 
 \begin{equation}
-	\bar{H_2} = \frac{1}{3} * (2 + 3 + 4) = \frac{1}{3} * 9 = 3
+	\bar{g} = \frac{1}{3} * (2 + 3 + 4) = \frac{1}{3} * 9 = 3
 	\label{eq:h_2_avg}
 \end{equation}
 
-\paragraph{}
 Then we should insert values from table \ref{tab:histogram_comparison} and averages from the equation \ref{eq:h_1_avg} and from the equation \ref{eq:h_2_avg} into the formula for computing the metric of histogram comparison (the equation \ref{eq:hist_comparison}):
 
 \begin{equation}
